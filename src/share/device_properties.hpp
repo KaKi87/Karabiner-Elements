@@ -214,7 +214,7 @@ public:
         .is_game_pad = is_game_pad,
         .is_consumer = is_consumer,
         .iokit_keyboard_type = [&] {
-          if (auto value = hid_device.find_int64_property(CFSTR(kIOHIDKeyboardTypeKey),
+          if (auto value = hid_device.find_int64_property(kIOHIDKeyboardTypeKey,
                                                           true)) {
             return std::optional<pqrs::osx::iokit_keyboard_type::value_t>(
                 pqrs::osx::iokit_keyboard_type::value_t(*value));
