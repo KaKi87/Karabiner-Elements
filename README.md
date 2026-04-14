@@ -59,7 +59,7 @@ System requirements to build Karabiner-Elements:
     git submodule update --init --recursive --depth 1
     ```
 
-2.  (Optional) If you have a codesign identity:
+2.  (Optional, but required if you want App Background Activity entries to appear) If you have a codesign identity:
     1.  Find your codesign identity.
 
         ```shell
@@ -79,6 +79,9 @@ System requirements to build Karabiner-Elements:
         ```shell
         export PQRS_ORG_CODE_SIGN_IDENTITY=8D660191481C98F5C56630847A6C39D95C166F22
         ```
+
+        If you skip this, the build falls back to the first available Apple-issued application signing identity (`Developer ID Application`, `Apple Development`, or `Apple Distribution`).
+        If no such identity is available, the app bundles remain ad-hoc signed, and macOS may not persist or display the `SMAppService` background items for Karabiner.
 
     3.  Find your codesign identity for installer signing.
 
