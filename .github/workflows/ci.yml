@@ -5,9 +5,23 @@ on:
     paths-ignore:
       - vendor/cpm-cmake-package-lock
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: macos-15-intel
+            arch: x86_64
+            run-additional-checks: false
+          - runs-on: macos-15
+            arch: arm64
+            run-additional-checks: true
+
+    runs-on: ${{ matrix['runs-on'] }}
 
     steps:
       - uses: actions/checkout@v6
@@ -22,7 +36,25 @@ jobs:
         run: brew install xcodegen
       - name: package
         run: make package
+      - name: rename dmg
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          dmgs=(Karabiner-Elements-*.dmg)
+          if [[ ${#dmgs[@]} -ne 1 ]]; then
+            echo "Expected exactly one DMG file, found ${#dmgs[@]}."
+            exit 1
+          fi
+          mv "${dmgs[0]}" "${dmgs[0]%.dmg}-${{ matrix.arch }}.dmg"
+      - name: upload dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Karabiner-Elements-dmg-${{ matrix.arch }}
+          path: Karabiner-Elements-*-${{ matrix.arch }}.dmg
+          if-no-files-found: error
       - name: appendix
+        if: matrix['run-additional-checks']
         run: ruby scripts/reduce-logs.rb 'make -C appendix'
       - name: tests
+        if: matrix['run-additional-checks']
         run: ruby scripts/reduce-logs.rb 'make -C tests'
