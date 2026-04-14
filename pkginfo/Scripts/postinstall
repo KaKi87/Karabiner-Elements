@@ -29,6 +29,26 @@ chmod 4755 '/Library/Application Support/org.pqrs/Karabiner-Elements/bin/karabin
 '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-AppIconSwitcher.app/Contents/MacOS/Karabiner-AppIconSwitcher'
 
 #
+# Register installed app bundles in the Launch Services database
+#
+
+lsregister='/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister'
+for app in \
+    '/Applications/Karabiner-Elements.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Core-Service.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Non-Privileged Agents v2.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Elements Privileged Daemons v2.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Menu.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-MultitouchExtension.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-NotificationWindow.app' \
+    '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app'
+do
+    if [ -d "$app" ]; then
+        "$lsregister" -f "$app"
+    fi
+done
+
+#
 # Relaunch karabiner processes
 #
 
