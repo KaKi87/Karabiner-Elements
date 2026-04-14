@@ -219,7 +219,7 @@ public:
             return std::optional<pqrs::osx::iokit_keyboard_type::value_t>(
                 pqrs::osx::iokit_keyboard_type::value_t(*value));
           }
-          return std::nullopt;
+          return std::optional<pqrs::osx::iokit_keyboard_type::value_t>(std::nullopt);
         }(),
     });
   }
