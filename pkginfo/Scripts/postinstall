@@ -44,7 +44,9 @@ for app in \
     '/Library/Application Support/org.pqrs/Karabiner-Elements/Karabiner-Updater.app'
 do
     if [ -d "$app" ]; then
-        "$lsregister" -f "$app"
+        if ! "$lsregister" -f "$app"; then
+            echo "Failed to register $app in the Launch Services database" >&2
+        fi
     fi
 done
 
