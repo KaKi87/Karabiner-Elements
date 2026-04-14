@@ -5,20 +5,23 @@ on:
     paths-ignore:
       - vendor/cpm-cmake-package-lock
 
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - runs_on: macos-15-intel
+          - runs-on: macos-15-intel
             arch: x86_64
-            run_additional_checks: false
-          - runs_on: macos-15
+            run-additional-checks: false
+          - runs-on: macos-15
             arch: arm64
-            run_additional_checks: true
+            run-additional-checks: true
 
-    runs-on: ${{ matrix.runs_on }}
+    runs-on: ${{ matrix['runs-on'] }}
 
     steps:
       - uses: actions/checkout@v6
@@ -35,9 +38,13 @@ jobs:
         run: make package
       - name: rename dmg
         run: |
+          set -euo pipefail
           shopt -s nullglob
           dmgs=(Karabiner-Elements-*.dmg)
-          test ${#dmgs[@]} -eq 1
+          if [[ ${#dmgs[@]} -ne 1 ]]; then
+            echo "Expected exactly one DMG file, found ${#dmgs[@]}."
+            exit 1
+          fi
           mv "${dmgs[0]}" "${dmgs[0]%.dmg}-${{ matrix.arch }}.dmg"
       - name: upload dmg artifact
         uses: actions/upload-artifact@v4
@@ -46,8 +53,8 @@ jobs:
           path: Karabiner-Elements-*-${{ matrix.arch }}.dmg
           if-no-files-found: error
       - name: appendix
-        if: ${{ matrix.run_additional_checks }}
+        if: ${{ matrix['run-additional-checks'] }}
         run: ruby scripts/reduce-logs.rb 'make -C appendix'
       - name: tests
-        if: ${{ matrix.run_additional_checks }}
+        if: ${{ matrix['run-additional-checks'] }}
         run: ruby scripts/reduce-logs.rb 'make -C tests'
