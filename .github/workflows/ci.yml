@@ -53,8 +53,8 @@ jobs:
           path: Karabiner-Elements-*-${{ matrix.arch }}.dmg
           if-no-files-found: error
       - name: appendix
-        if: ${{ matrix['run-additional-checks'] }}
+        if: matrix['run-additional-checks']
         run: ruby scripts/reduce-logs.rb 'make -C appendix'
       - name: tests
-        if: ${{ matrix['run-additional-checks'] }}
+        if: matrix['run-additional-checks']
         run: ruby scripts/reduce-logs.rb 'make -C tests'
