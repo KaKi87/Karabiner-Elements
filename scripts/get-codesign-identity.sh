@@ -7,6 +7,7 @@ readonly PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 if ! command -v security >/dev/null 2>&1; then
+  # `security` is only available on macOS, so skip auto-detection elsewhere.
   echo
   exit 0
 fi
@@ -25,6 +26,7 @@ find_identity() {
 
   awk -v pattern="$pattern" '
     $0 ~ pattern {
+      # Extract the 40-character certificate fingerprint from `security find-identity`.
       if (match($0, /[0-9A-F]{40}/)) {
         print substr($0, RSTART, RLENGTH)
         exit
